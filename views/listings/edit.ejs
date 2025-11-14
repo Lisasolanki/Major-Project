@@ -1,0 +1,142 @@
+<% layout("/layouts/boilerplate") %>
+
+<h3 class="mb-4">Edit Your Listing</h3>
+
+<form 
+  method="POST" 
+  action="/listings/<%= listing._id %>?_method=PUT" 
+  class="needs-validation" 
+  novalidate
+  enctype="multipart/form-data"
+>
+
+  <!-- Title -->
+  <div class="mb-3">
+    <label for="listing-title" class="form-label">Title</label>
+    <input 
+      id="listing-title" 
+      name="listing[title]" 
+      type="text" 
+      class="form-control" 
+      value="<%= listing.title %>" 
+      placeholder="Enter title"
+      required 
+      minlength="3"
+    >
+    <div class="valid-feedback">✅ Title looks great!</div>
+    <div class="invalid-feedback">⚠️ Please enter a valid title (minimum 3 characters).</div>
+  </div>
+
+  <!-- Description -->
+  <div class="mb-3">
+    <label for="listing-description" class="form-label">Description</label>
+    <textarea 
+      id="listing-description" 
+      name="listing[description]" 
+      class="form-control" 
+      rows="3" 
+      required 
+      minlength="10"
+      placeholder="Enter a detailed description"
+    ><%= listing.description %></textarea>
+    <div class="valid-feedback">✅ Description looks detailed!</div>
+    <div class="invalid-feedback">⚠️ Please enter at least 10 characters for the description.</div>
+  </div>
+
+  <!-- Current Image Preview -->
+  <% if (listing.image && listing.image.url) { %>
+    <div class="mb-3">
+      <label class="form-label d-block">Current Image</label>
+      <img 
+        src="<%= listing.image.url %>" 
+        alt="Current image" 
+        class="img-fluid rounded" 
+        style="max-width: 250px; border: 1px solid #ddd; padding: 4px;"
+      >
+    </div>
+  <% } %>
+
+  <!-- Upload New Image -->
+  <div class="mb-3">
+    <label for="listing-image" class="form-label">Upload New Image (optional)</label>
+    <input 
+      id="listing-image" 
+      name="image" 
+      type="file" 
+      class="form-control"
+      accept="image/png, image/jpeg, image/jpg"
+    >
+    <div class="form-text text-muted">Leave this blank to keep the current image.</div>
+  </div>
+
+  <!-- Price -->
+  <div class="mb-3">
+    <label for="listing-price" class="form-label">Price</label>
+    <input 
+      id="listing-price" 
+      name="listing[price]" 
+      type="number" 
+      class="form-control" 
+      value="<%= listing.price %>" 
+      placeholder="Enter price"
+      required 
+      min="1"
+      step="0.01"
+    >
+    <div class="valid-feedback">✅ Price looks good!</div>
+    <div class="invalid-feedback">⚠️ Please enter a valid number greater than 0.</div>
+  </div>
+
+  <!-- Country -->
+  <div class="mb-3">
+    <label for="listing-country" class="form-label">Country</label>
+    <input 
+      id="listing-country" 
+      name="listing[country]" 
+      type="text" 
+      class="form-control" 
+      value="<%= listing.country %>" 
+      placeholder="Enter country name"
+      required
+    >
+    <div class="valid-feedback">✅ Country looks valid!</div>
+    <div class="invalid-feedback">⚠️ Please enter a valid country name.</div>
+  </div>
+
+  <!-- Location -->
+  <div class="mb-3">
+    <label for="listing-location" class="form-label">Location</label>
+    <input 
+      id="listing-location" 
+      name="listing[location]" 
+      type="text" 
+      class="form-control" 
+      value="<%= listing.location %>" 
+      placeholder="Enter location"
+      required
+    >
+    <div class="valid-feedback">✅ Location looks great!</div>
+    <div class="invalid-feedback">⚠️ Please provide a valid location.</div>
+  </div>
+
+  <!-- Submit button -->
+  <button type="submit" class="btn btn-primary">Save Changes</button>
+  <br/><br/>
+</form>
+
+<!-- Bootstrap client-side validation -->
+<script>
+  (function () {
+    'use strict';
+    const forms = document.querySelectorAll('.needs-validation');
+    Array.from(forms).forEach(form => {
+      form.addEventListener('submit', event => {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+</script>

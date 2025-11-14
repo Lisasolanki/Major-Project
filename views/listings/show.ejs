@@ -1,0 +1,91 @@
+<% layout("/layouts/boilerplate") %>
+<br />
+
+<h3><strong><%= listing.title %></strong></h3>
+
+<!-- Listing Image -->
+<% if (listing.image && listing.image.url) { %>
+  <img src="<%= listing.image.url %>" 
+       alt="<%= listing.title %>" 
+       class="img-fluid mb-3" 
+       style="max-height:300px;">
+<% } else { %>
+  <img src="https://via.placeholder.com/400x300?text=No+Image" 
+       alt="No Image" 
+       class="img-fluid mb-3">
+<% } %>
+
+<!-- Listing Details -->
+<ul class="list-group mb-3">
+  <i>Owned by: <%= listing.owner.username %></i><br/>
+  <li class="list-group-item"><strong>Description:</strong> <%= listing.description %></li>
+  <li class="list-group-item"><strong>Price:</strong> ₹<%= listing.price.toLocaleString("en-IN") %></li>
+  <li class="list-group-item"><strong>Location:</strong> <%= listing.location %></li>
+  <li class="list-group-item"><strong>Country:</strong> <%= listing.country %></li>
+</ul>
+
+
+
+
+
+<!-- Edit/Delete Listing -->
+<% if (currUser && listing.owner && currUser._id.equals(listing.owner._id)) { %>
+  <a href="/listings/<%= listing._id %>/edit" class="btn btn-warning mb-2">Edit this Listing</a>
+  <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE" class="mb-4 d-inline">
+    <button type="submit" class="btn btn-danger">Delete this Listing</button>
+  </form>
+<% } %>
+
+<!-- Review Form -->
+<% if (currUser) { %> 
+  <h4 class="mb-3">Leave a Review</h4>
+  <form method="POST" action="/listings/<%= listing._id %>/reviews" class="mb-5">
+    <div class="mb-3">
+      <label for="rating" class="form-label">Rating (1–5)</label>
+      <select id="rating" name="review[rating]" class="form-select" required>
+        <option value="" selected disabled>Select rating</option>
+        <option value="1">★☆☆☆☆ (1)</option>
+        <option value="2">★★☆☆☆ (2)</option>
+        <option value="3">★★★☆☆ (3)</option>
+        <option value="4">★★★★☆ (4)</option>
+        <option value="5">★★★★★ (5)</option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label for="comment" class="form-label">Your Review</label>
+      <textarea id="comment" name="review[comment]" class="form-control" placeholder="Share your experience..." rows="3" required></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Submit Review</button>
+  </form>
+<% } %>
+
+<!-- Display Existing Reviews -->
+<% if (listing.reviews && listing.reviews.length > 0) { %>
+  <h5>All Reviews</h5>
+  <ul class="list-group">
+    <% listing.reviews.forEach(r => { %>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <strong>⭐ <%= r.rating %>/5</strong> – <%= r.comment %>
+          <br>
+          <small class="text-muted">
+            by <%= r.owner ? r.owner.username : "Unknown User" %>
+
+          </small>
+        </div>
+
+        <% if (currUser && r.owner && r.owner._id.equals(currUser._id)) { %>
+          <form method="POST" 
+                action="/listings/<%= listing._id %>/reviews/<%= r._id %>?_method=DELETE" 
+                class="ms-2 d-inline">
+            <button class="btn btn-sm btn-outline-danger">Delete</button>
+          </form>
+        <% } %>
+      </li>
+    <% }) %>
+  </ul>
+<% } else { %>
+  <p class="text-muted">No reviews yet. Be the first to review!</p>
+<% } %>

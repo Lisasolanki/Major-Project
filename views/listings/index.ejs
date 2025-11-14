@@ -1,0 +1,277 @@
+<% layout("/layouts/boilerplate") %>
+
+<h3 class="mb-4">All Listings</h3>
+
+<!-- ============================= -->
+<!-- Filters + Toggle (Airbnb-inspired) -->
+<!-- ============================= -->
+<style>
+  /* Filter bar - tightened spacing */
+  .filter-area {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:20px;
+  }
+
+  .filter-bar {
+    display:flex;
+    gap:10px;
+    overflow-x:auto;
+    padding-bottom:6px;
+    border-bottom:1px solid #ececec;
+    scrollbar-width: thin;
+  }
+
+  .filter-item {
+    flex:0 0 auto;
+    text-align:center;
+    width:70px;               /* reduced from 92px */
+    cursor:pointer;
+    padding:6px 4px;          /* reduced padding */
+    border-radius:10px;
+    opacity:0.9;
+    transition: all .15s ease;
+    background:#fff;
+    border:1px solid transparent;
+    font-size:12px;           /* smaller text */
+  }
+
+  .filter-item:hover { transform: translateY(-2px); opacity:1; }
+
+  .filter-item.active {
+    background:#0d6efd;
+    color:white;
+    box-shadow:0 3px 12px rgba(13,110,253,0.15);
+    border-color:rgba(0,0,0,0.06);
+  }
+
+  .filter-icon {
+    font-size:17px;           /* reduced from 20px */
+    display:block;
+    margin-bottom:4px;
+  }
+
+  /* Toggle stays same */
+  .toggle-wrap {
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-left:auto;
+    min-width:180px;
+    justify-content:flex-end;
+  }
+</style>
+
+<div class="filter-area">
+  <div style="flex:1 1 auto;">
+    <div class="filter-bar" id="filterBar" role="toolbar" aria-label="Filters">
+
+      <div class="filter-item" data-filter="entire">
+        <span class="filter-icon">🏠</span>
+        <small>Entire</small>
+      </div>
+
+      <div class="filter-item" data-filter="room">
+        <span class="filter-icon">🛏️</span>
+        <small>Rooms</small>
+      </div>
+
+      <div class="filter-item" data-filter="pool">
+        <span class="filter-icon">🏊</span>
+        <small>Pool</small>
+      </div>
+
+      <div class="filter-item" data-filter="beach">
+        <span class="filter-icon">🏖️</span>
+        <small>Beach</small>
+      </div>
+
+      <div class="filter-item" data-filter="mountain">
+        <span class="filter-icon">🌄</span>
+        <small>Hill</small>
+      </div>
+
+      <div class="filter-item" data-filter="pet">
+        <span class="filter-icon">🐕</span>
+        <small>Pets</small>
+      </div>
+
+      <div class="filter-item" data-filter="ski">
+        <span class="filter-icon">⛷️</span>
+        <small>Ski</small>
+      </div>
+
+      <div class="filter-item" data-filter="sauna">
+        <span class="filter-icon">🧖‍♀️</span>
+        <small>Sauna</small>
+      </div>
+
+      <div class="filter-item" data-filter="camp">
+        <span class="filter-icon">🔥</span>
+        <small>Camp</small>
+      </div>
+
+      <div class="filter-item" data-filter="luxury">
+        <span class="filter-icon">💎</span>
+        <small>Luxury</small>
+      </div>
+
+    </div>
+
+    <div class="active-badges" id="activeBadges"></div>
+  </div>
+
+  <!-- Toggle preserved -->
+  <div class="toggle-wrap">
+    <div style="text-align:right;">
+      <div class="toggle-label">Only show listings with images</div>
+      <label class="switch">
+        <input type="checkbox" id="imageToggle">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+</div>
+
+
+<!-- ============================= -->
+<!-- Listing Cards Grid -->
+<!-- Add data-features attribute (CSV) and data-has-image -->
+<!-- ============================= -->
+<div class="row row-cols-lg-3 row-cols-md-2 row-cols-sm-1 g-4" id="listingsGrid">
+  <% for (let listing of listings) { 
+       // listing.features expected as array of strings; fallback to empty array
+       const features = Array.isArray(listing.features) ? listing.features : [];
+       const hasImage = listing.image && listing.image.url && !listing.image.url.includes("placeholder");
+  %>
+    <div class="col listing-card" 
+         data-features="<%= features.join(',').toLowerCase() %>" 
+         data-has-image="<%= hasImage ? 'true' : 'false' %>">
+      <div class="card h-100 shadow-sm">
+        <% if (listing.image && listing.image.url) { %>
+          <img src="<%= listing.image.url %>" class="card-img-top listing-img" alt="<%= listing.title %>">
+        <% } else { %>
+          <img src="https://via.placeholder.com/300x200?text=No+Image" class="card-img-top listing-img" alt="No Image">
+        <% } %>
+
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title"><%= listing.title %></h5>
+          <p class="card-text text-truncate" style="max-height:4.5em;"><%= listing.description %></p>
+
+          <div class="mt-auto">
+            <p class="card-text mb-1"><strong>Price:</strong> ₹<%= listing.price %>/night</p>
+            <p class="card-text"><small class="text-muted"><%= listing.location %>, <%= listing.country %></small></p>
+            <div class="d-flex justify-content-between align-items-center mt-2">
+              <a href="/listings/<%= listing._id %>" class="btn btn-primary btn-sm">View</a>
+              <!-- show feature badges inside card -->
+              <div style="display:flex; gap:6px; flex-wrap:wrap; max-width:140px; justify-content:flex-end;">
+                <% for (let f of features.slice(0,3)) { %>
+                  <span class="badge bg-light text-dark" style="font-size:11px;"><%= f %></span>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  <% } %>
+</div>
+
+<!-- ============================= -->
+<!-- Client-side filter logic -->
+<!-- ============================= -->
+<script>
+  (function () {
+    const filterBar = document.getElementById('filterBar');
+    const filterItems = Array.from(filterBar.querySelectorAll('.filter-item'));
+    const grid = document.getElementById('listingsGrid');
+    const cards = Array.from(grid.querySelectorAll('.listing-card'));
+    const activeBadges = document.getElementById('activeBadges');
+    const imageToggle = document.getElementById('imageToggle');
+
+    // track active filters (strings)
+    const activeFilters = new Set();
+
+    function updateBadges() {
+      activeBadges.innerHTML = '';
+      if (activeFilters.size === 0 && !imageToggle.checked) return;
+      activeFilters.forEach(f => {
+        const el = document.createElement('div');
+        el.className = 'badge-filter';
+        el.textContent = f;
+        activeBadges.appendChild(el);
+      });
+      if (imageToggle.checked) {
+        const el = document.createElement('div');
+        el.className = 'badge-filter';
+        el.textContent = 'Has image';
+        activeBadges.appendChild(el);
+      }
+    }
+
+    function doesCardMatch(card) {
+      // If toggle on, require data-has-image true
+      if (imageToggle.checked && card.dataset.hasImage !== 'true') return false;
+
+      // If no active filters, it's a match
+      if (activeFilters.size === 0) return true;
+
+      const features = (card.dataset.features || '').split(',').map(s=>s.trim()).filter(Boolean);
+      // require that card includes ALL active filters (AND logic) — change to any if you prefer OR
+      for (let f of activeFilters) {
+        if (!features.includes(f.toLowerCase())) return false;
+      }
+      return true;
+    }
+
+    function applyFilters() {
+      cards.forEach(card => {
+        if (doesCardMatch(card)) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+      updateBadges();
+    }
+
+    // filter item click -> toggle active
+    filterItems.forEach(item => {
+      item.addEventListener('click', () => {
+        const key = item.dataset.filter;
+        if (!key) return;
+        if (item.classList.contains('active')) {
+          item.classList.remove('active');
+          activeFilters.delete(key);
+        } else {
+          item.classList.add('active');
+          activeFilters.add(key);
+        }
+        applyFilters();
+      });
+    });
+
+    // toggle image only
+    imageToggle.addEventListener('change', () => {
+      applyFilters();
+    });
+
+    // initial run
+    applyFilters();
+
+    // Optional: keyboard accessibility - space toggles focused filter
+    filterItems.forEach(item => {
+      item.setAttribute('tabindex', '0');
+      item.addEventListener('keydown', (e) => {
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault();
+          item.click();
+        }
+      });
+    });
+
+  })();
+</script>

@@ -1,0 +1,57 @@
+<nav class="navbar navbar-expand-md bg-body-light border-bottom sticky-top">
+  <div class="container-fluid">
+    
+    <!-- Left brand -->
+    <a class="navbar-brand" href="/listings">
+      <i class="fa-regular fa-compass"></i>
+    </a>
+
+    <!-- Toggler -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+      
+      <!-- CENTER SEARCH BAR (Airbnb style) -->
+      <form class="d-flex mx-auto" action="/listings" method="GET" style="max-width:420px; width:100%;">
+        <div class="input-group" 
+             style="border:1px solid #ddd; border-radius:40px; padding:6px 14px; box-shadow:0 1px 4px rgba(0,0,0,0.08); background:white;">
+
+          <input type="text" 
+                 class="form-control border-0 shadow-none" 
+                 name="search" 
+                 placeholder="Search destinations..."
+                 value="<%= typeof search !== 'undefined' ? search : '' %>"
+                 style="font-size:14px;">
+
+          <button class="btn btn-danger rounded-circle" type="submit" 
+                  style="width:38px; height:38px; display:flex; align-items:center; justify-content:center;">
+            <i class="fa-solid fa-magnifying-glass" style="font-size:14px;"></i>
+          </button>
+
+        </div>
+      </form>
+
+
+      <!-- RIGHT NAV LINKS -->
+      <div class="navbar-nav ms-auto">
+
+        <a class="nav-link" href="/listings/new">Add your Place</a>
+
+        <% if(!currUser) { %>
+          <a class="nav-link active" aria-current="page" href="/signup"><b>Signup</b></a>
+          <a class="nav-link" href="/login"><b>Log In</b></a>
+        <% } %>
+
+        <% if(currUser) { %>
+          <a class="nav-link" href="/logout">Log Out</a>
+        <% } %>
+
+      </div>
+
+    </div>
+  </div>
+</nav>
